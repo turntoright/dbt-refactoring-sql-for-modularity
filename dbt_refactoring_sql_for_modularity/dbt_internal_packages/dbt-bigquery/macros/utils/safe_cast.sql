@@ -1,4 +1,3 @@
--- funcsign: (string, string) -> string
 {% macro bigquery__safe_cast(field, type) %}
 {%- if type.lower().startswith('array') and field is iterable and (field is not string and field is not mapping) and field | length > 0 -%}
     {#-- Extract nested type from 'array<nested_type>' --#}
@@ -23,7 +22,6 @@
 {%- endif -%}
 {% endmacro %}
 
--- funcsign: (string) -> bool
 {% macro cast_from_string_unsupported_for(type) %}
     {{ return(type.lower().startswith('struct') or type.lower() == 'geography') }}
 {% endmacro %}

@@ -1,10 +1,8 @@
--- funcsign: (string, string, string, string) -> string
 {% macro get_tables_by_pattern_sql(schema_pattern, table_pattern, exclude='', database=target.database) %}
     {{ return(adapter.dispatch('get_tables_by_pattern_sql')
         (schema_pattern, table_pattern, exclude, database)) }}
 {% endmacro %}
 
--- funcsign: (string, string, string, string) -> string
 {% macro default__get_tables_by_pattern_sql(schema_pattern, table_pattern, exclude='', database=target.database) %}
 
         select distinct
@@ -18,7 +16,6 @@
 
 {% endmacro %}
 
--- funcsign: (string, string, string, string) -> string
 {% macro redshift__get_tables_by_pattern_sql(schema_pattern, table_pattern, exclude='', database=target.database) %}
 
     {% set sql %}
@@ -45,7 +42,7 @@
     {{ return(sql) }}
 {% endmacro %}
 
--- funcsign: (string, string, string, string) -> string
+
 {% macro bigquery__get_tables_by_pattern_sql(schema_pattern, table_pattern, exclude='', database=target.database) %}
 
     {% if '%' in schema_pattern %}
@@ -74,7 +71,7 @@
 
 {% endmacro %}
 
--- funcsign: (string, string) -> string
+
 {% macro _bigquery__get_matching_schemata(schema_pattern, database) %}
     {% if execute %}
 

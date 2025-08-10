@@ -1,4 +1,3 @@
--- funcsign: (relation, string, string, relation, relation, relation) -> string
 {% macro get_alter_materialized_view_as_sql(
     relation,
     configuration_changes,
@@ -18,7 +17,7 @@
     ) -}}
 {% endmacro %}
 
--- funcsign: (relation, string, string, relation, relation, relation) -> string
+
 {% macro default__get_alter_materialized_view_as_sql(
     relation,
     configuration_changes,
@@ -31,7 +30,6 @@
 {% endmacro %}
 
 
--- funcsign: (relation, config) -> string
 {% macro get_materialized_view_configuration_changes(existing_relation, new_config) %}
     /* {#
     It's recommended that configuration changes be formatted as follows:
@@ -52,7 +50,6 @@
 {% endmacro %}
 
 
--- funcsign: (relation, config) -> string
 {% macro default__get_materialized_view_configuration_changes(existing_relation, new_config) %}
     {{ exceptions.raise_compiler_error("Materialized views have not been implemented for this adapter.") }}
 {% endmacro %}

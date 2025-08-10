@@ -1,7 +1,6 @@
 {#
     Dispatch strategies by name, optionally qualified to a package
 #}
--- funcsign: (string) -> (model, string, string, model.config, bool) -> strategy
 {% macro strategy_dispatch(name) -%}
 {% set original_name = name %}
   {% if '.' in name %}
@@ -36,12 +35,10 @@
 {#
     Create SCD Hash SQL fields cross-db
 #}
--- funcsign: (list[string]) -> string
 {% macro snapshot_hash_arguments(args) -%}
   {{ adapter.dispatch('snapshot_hash_arguments', 'dbt')(args) }}
 {%- endmacro %}
 
--- funcsign: (list[string]) -> string
 {% macro default__snapshot_hash_arguments(args) -%}
     md5({%- for arg in args -%}
         coalesce(cast({{ arg }} as varchar ), '')
@@ -74,7 +71,7 @@
         ({{ snapshotted_rel }}.{{ columns.dbt_valid_from }} < {{ current_rel }}.{{ updated_at }})
     {%- endset %}
 
-    {% set scd_args = api.Relation.scd_args(primary_key, updated_at) %} -- noqa: updated_at should be a string
+    {% set scd_args = api.Relation.scd_args(primary_key, updated_at) %}
     {% set scd_id_expr = snapshot_hash_arguments(scd_args) %}
 
     {% do return({
@@ -87,19 +84,18 @@
     }) %}
 {% endmacro %}
 
--- funcsign: (timestamp) -> string
+
 {% macro snapshot_string_as_time(timestamp) -%}
     {{ adapter.dispatch('snapshot_string_as_time', 'dbt')(timestamp) }}
 {%- endmacro %}
 
--- funcsign: (timestamp) -> string
 {% macro default__snapshot_string_as_time(timestamp) %}
     {% do exceptions.raise_not_implemented(
         'snapshot_string_as_time macro not implemented for adapter '+adapter.type()
     ) %}
 {% endmacro %}
 
--- funcsign: (model, bool, list[string]|string) -> tuple[bool, list[base_column]]
+
 {% macro snapshot_check_all_get_existing_columns(node, target_exists, check_cols_config) -%}
     {%- if not target_exists -%}
         {#-- no table yet -> return whatever the query does --#}
@@ -127,7 +123,7 @@
         {% do exceptions.raise_compiler_error("Invalid value for 'check_cols': " ~ check_cols_config) %}
     {% endif %}
 
-    {%- set existing_cols = adapter.get_columns_in_relation(target_relation) | map(attribute = 'name') | list -%} -- noqa: should be a relation instead of an optional[string]
+    {%- set existing_cols = adapter.get_columns_in_relation(target_relation) | map(attribute = 'name') | list -%}
     {%- set ns = namespace() -%} {#-- handle for-loop scoping with a namespace --#}
     {%- set ns.column_added = false -%}
 
@@ -141,7 +137,8 @@
     {%- endfor -%}
     {{ return((ns.column_added, intersection)) }}
 {%- endmacro %}
--- funcsign: (model, string, string, config, bool) -> struct{unique_key: list[string]|string|none, updated_at: string, row_changed: string, scd_id: string, invalidate_hard_deletes: bool, hard_deletes: string}
+
+
 {% macro snapshot_check_strategy(node, snapshotted_rel, current_rel, model_config, target_exists) %}
     {# The model_config parameter is no longer used, but is passed in anyway for compatibility. #}
     {% set check_cols_config = config.get('check_cols') %}
@@ -152,7 +149,7 @@
 
     {% set column_added = false %}
 
-    {% set column_added, check_cols = snapshot_check_all_get_existing_columns(node, target_exists, check_cols_config) %} -- noqa: check_cols_config is a string|list[string]|none
+    {% set column_added, check_cols = snapshot_check_all_get_existing_columns(node, target_exists, check_cols_config) %}
 
     {%- set row_changed_expr -%}
     (
@@ -173,7 +170,7 @@
     )
     {%- endset %}
 
-    {% set scd_args = api.Relation.scd_args(primary_key, updated_at) %} -- noqa: primary_key is a string|list[string]|none
+    {% set scd_args = api.Relation.scd_args(primary_key, updated_at) %}
     {% set scd_id_expr = snapshot_hash_arguments(scd_args) %}
 
     {% do return({

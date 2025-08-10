@@ -2,7 +2,6 @@
     {% do return(adapter.dispatch('get_where_subquery', 'dbt')(relation)) %}
 {%- endmacro %}
 
--- funcsign: (relation) -> string
 {% macro default__get_where_subquery(relation) -%}
     {% set where = config.get('where', '') %}
     {% if where %}
